@@ -3,15 +3,12 @@
 https://esolangs.org/wiki/Monkeys
 """
 
-import logging
 import string
 import sys
 
 from random import randrange
 
 from esolang import INTERPRETERS
-
-# logger = logging.getLogger(__name__)
 
 
 SETUP = """
@@ -36,7 +33,7 @@ class Monkey(object):
 
         self.__value = 0
         self.sleeping = False
-        self.mark = None
+        self.mark = 0
         self.banana = None
 
     @property
@@ -46,8 +43,6 @@ class Monkey(object):
     @value.setter
     def value(self, value):
         self.__value = value % 256
-        # logger.debug("Setting monkey %d to value %d" % (
-        #    self.number, self.value))
 
 
 class Banana(object):
@@ -213,7 +208,7 @@ class MonkeysInterpreter(object):
 
         # illegal move
         if (not 0 <= new_x <= 9) or (not 0 <= new_y <= 9):
-            monkey.value = (monkey.value - 1) % 256
+            monkey.value -= 1
         # collide
         elif self._monkey_at(new_x, new_y):
             other = self._monkey_at(new_x, new_y)
@@ -221,8 +216,8 @@ class MonkeysInterpreter(object):
                 other.sleeping = False
             else:
                 if bool(monkey.banana) == bool(other.banana):
-                    monkey.value = (monkey.value + 1) % 256
-                    other.value = (other.value + 1) % 256
+                    monkey.value += 1
+                    other.value += 1
                 else:
                     monkey.banana, other.banana = (
                         other.banana, monkey.banana)
@@ -230,7 +225,7 @@ class MonkeysInterpreter(object):
         else:
             monkey.x, monkey.y = new_x, new_y
             if not self._adjacent(monkey):
-                monkey.value = (monkey.value + 1) % 256
+                monkey.value += 1
 
             # move the banana as well
             if monkey.banana:
