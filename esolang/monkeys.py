@@ -94,6 +94,8 @@ class MonkeysInterpreter(object):
                 if SETUP[y][x] in "!67":
                     self.bananas.append(Banana(x, y))
 
+        # The SETUP doesn't place monkey 4 and 5 in order.
+        self.monkeys.sort(key=lambda m: m.number)
         self.code = []
         self.pc = 0
 
