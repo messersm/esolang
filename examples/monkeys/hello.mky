@@ -1,0 +1,173 @@
+# A commented Monkeys implementation of the hello world program.
+
+# https://esolangs.org/wiki/Monkeys
+
+# We YELL print ASCII values of "Hello, world!\n" in order:
+# 72, 101, 108, 108, 111, 44, 32, 119, 111, 114, 108, 100, 33, 10
+# Monkey 5 is used for the values 44, 32 and 33.
+# Monkey 7 is used for the value 10 and will also function
+# as a fast way to set the other monkeys using TEACH and FIGHT.
+# Monkey 6 will be used for all other values.
+
+# Effective lines of code: 77
+
+# Starting grid:
+# ..!1.!....
+# .......2!.
+# .........!
+# .3.!......
+# .......!..
+# .!....!...
+# ..5.!4....
+# ....6...!.
+# ......!...
+# .7......!.
+
+# Set monkey 7 to 10
+7 RIGHT
+7 RIGHT
+7 LEFT
+7 RIGHT
+7 LEFT
+7 RIGHT
+7 LEFT
+7 RIGHT
+7 LEFT
+7 RIGHT
+
+# 5: 0, 6: 0, 7: 10, grid:
+# ..!1.!....
+# .......2!.
+# .........!
+# .3.!......
+# .......!..
+# .!....!...
+# ..5.!4....
+# ....6...!.
+# ......!...
+# .!.7....!.
+
+# Set monkeys 5 to 44 and 6 to 72 and let monkey 6 yell.
+5 DOWN
+5 DOWN
+6 DOWN
+7 TEACH
+7 TEACH
+7 TEACH
+7 TEACH
+5 LEFT
+5 LEFT
+5 RIGHT
+7 TEACH
+7 TEACH
+7 TEACH
+6 RIGHT
+6 DOWN
+6 YELL
+
+# 5: 44, 6: 72, 7: 10, grid:
+# ..!1.!....
+# .......2!.
+# .........!
+# .3.!......
+# .......!..
+# .!....!...
+# ....!4....
+# ........!.
+# .5....!...
+# .!.7.6..!.
+
+# Let monkey 6 yell 101, 108, 108 and 111.
+6 LEFT
+7 TEACH
+7 TEACH
+7 TEACH
+6 DOWN
+6 YELL
+7 TEACH
+6 DOWN
+6 DOWN
+6 DOWN
+6 YELL
+6 YELL
+6 RIGHT
+6 UP
+6 DOWN
+6 YELL
+
+# 5: 44, 6: 111, 7: 10, grid:
+# ..!1.!....
+# .......2!.
+# .........!
+# .3.!......
+# .......!..
+# .!....!...
+# ....!4....
+# ....!...!.
+# .5....!...
+# .!.7.6..!.
+
+# Let monkey 5 yell 44 and 32, then set it to 33.
+5 YELL
+5 RIGHT
+7 FIGHT
+5 DOWN
+5 DOWN
+5 DOWN
+5 YELL
+5 LEFT
+
+# 5: 33, 6: 111, 7: 10, grid:
+# ..!1.!....
+# .......2!.
+# .........!
+# .3.!......
+# .......!..
+# .!....!...
+# ....!4....
+# ....!...!.
+# ......!...
+# .5.7.6..!.
+
+# Let monkey 6 yell 119, 111, 114, 108, 100
+6 LEFT
+6 DOWN
+6 DOWN
+7 TEACH
+6 YELL
+7 FIGHT
+6 RIGHT
+6 UP
+6 YELL
+6 DOWN
+6 RIGHT
+6 LEFT
+6 YELL
+6 DOWN
+6 DOWN
+6 DOWN
+6 DOWN
+6 DOWN
+6 DOWN
+6 YELL
+6 LEFT
+7 FIGHT
+6 RIGHT
+6 RIGHT
+6 YELL
+
+# 5: 33, 6: 100, 7: 10, grid:
+# ..!1.!....
+# .......2!.
+# .........!
+# .3.!......
+# .......!..
+# .!....!...
+# ....!4....
+# ....!...!.
+# ......!...
+# .5.7..6.!.
+
+# Let monkey 5 yell 33 and let monkey 7 yell 10.
+5 YELL
+7 YELL
