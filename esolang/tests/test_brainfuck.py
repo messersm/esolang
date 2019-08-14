@@ -8,7 +8,7 @@ from unittest import TestCase
 
 from io import StringIO
 
-from esolang.brainfuck import Interpreter
+from esolang.lang.brainfuck import Interpreter
 
 HELLO_WORLD = """
 >++++++++[-<+++++++++>]<.>>+>-[+]++>++>+++[>[->+++<<+++>]<<]>-----.>->

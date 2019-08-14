@@ -8,7 +8,7 @@ from unittest import TestCase
 
 from io import StringIO
 
-from esolang.befunge import BefungeInterpreter as Interpreter
+from esolang.lang.befunge import BefungeInterpreter as Interpreter
 
 HELLO_WORLD = """64+"!dlroW ,olleH">:#,_@"""
 

@@ -2,6 +2,6 @@
 INTERPRETERS = []
 
 # Import modules and let them register with INTERPRETERS.
-import esolang.befunge
-import esolang.brainfuck
-import esolang.monkeys
+import esolang.lang.befunge
+import esolang.lang.brainfuck
+import esolang.lang.monkeys
