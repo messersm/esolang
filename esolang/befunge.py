@@ -13,6 +13,8 @@ if sys.version_info.major < 3:
 
 from random import choice
 
+from esolang import INTERPRETERS
+
 
 class BefungeInterpreter(object):
     """Befunge-93 interpreter"""
@@ -168,3 +170,6 @@ class BefungeInterpreter(object):
         self.y %= self.HEIGHT
 
         return True
+
+
+INTERPRETERS.append(BefungeInterpreter)

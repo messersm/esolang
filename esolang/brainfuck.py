@@ -2,11 +2,13 @@ from collections import defaultdict
 
 import sys
 
+from esolang import INTERPRETERS
+
 if sys.version_info.major < 3:
     chr = unichr
 
 
-class Interpreter(object):
+class BrainfuckInterpreter(object):
     lang = "Brainfuck"
     ext = ".b"
 
@@ -98,3 +100,6 @@ class Interpreter(object):
         min_ptr = min(self.memory.keys())
         max_ptr = max(self.memory.keys())
         return [self.memory[ptr] for ptr in range(min_ptr, max_ptr+1)]
+
+
+INTERPRETERS.append(BrainfuckInterpreter)
