@@ -8,7 +8,7 @@ from unittest import TestCase
 
 from io import StringIO
 
-from esolang.lang.brainfuck import Interpreter
+from esolang.lang.brainfuck import BrainfuckInterpreter
 
 HELLO_WORLD = """
 >++++++++[-<+++++++++>]<.>>+>-[+]++>++>+++[>[->+++<<+++>]<<]>-----.>->
@@ -53,7 +53,7 @@ class BrainfuckTests(TestCase):
     def run_code(self, code, interpreter=None):
         """Run the brainfuck code and return the standard output as string."""
         if interpreter is None:
-            interpreter = Interpreter()
+            interpreter = BrainfuckInterpreter()
         outfile = StringIO()
         interpreter.run(code, outfile=outfile)
         outfile.seek(0)
@@ -67,10 +67,10 @@ class BrainfuckTests(TestCase):
 
     def test_cellsize(self):
         for cellsize in 8, 16, 32:
-            interpreter = Interpreter(cellsize=cellsize)
+            interpreter = BrainfuckInterpreter(cellsize=cellsize)
             result = "%d bit cells\n" % cellsize
             self.assertEqual(result, self.run_code(CELLSIZE_TEST, interpreter))
 
-        interpreter = Interpreter(cellsize=None)
+        interpreter = BrainfuckInterpreter(cellsize=None)
         result = "32 bit cells\n"
         self.assertEqual(result, self.run_code(CELLSIZE_TEST, interpreter))
