@@ -2,7 +2,6 @@
 
 https://esolangs.org/wiki/My_Unreliable_Past
 """
-
 import logging
 import string
 import sys
@@ -18,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 if sys.version_info.major < 3:
     chr = unichr
+    from Queue import Queue
+else:
+    from queue import Queue
 
 
 def align(source):
@@ -136,43 +138,34 @@ class Interpreter(object):
         self.transactions = []
         self.tc = 0
 
+        self.input_q = Queue()
         self.input = []
-        self.input_lock = threading.Lock()
         self.input_idx = 0
+        self.input_lock = threading.Lock()
         self.input_chance = 0.5
+
+        self.output_q = Queue()
+        self.output = []
+        self.output_lock = threading.Lock()
         self.output_chance = 0.5
 
-    def read_infile(self):
+        self.running = True
+
+    def input_thread(self):
         """Keeps reading the infile until it closes."""
+        while self.running:
+            if self.input_q.empty():
+                char = self.infile.read(1)
+                if char:
+                    self.input_q.put(char)
 
-        while True:
-            if self.infile.closed:
-                break
-            else:
-                try:
-                    char = self.infile.read(1)
-                    if char:
-                        self.input_lock.acquire()
-                        self.input.append(char)
-                except IOError:
-                    pass
-
-    def get_input(self):
-        if not self.infile.closed:
-            if self.input_idx >= len(self.input):
-                return ''
-            else:
-                char = self.input[self.input_idx]
-                self.input_idx += 1
-                return char
-        else:
-            if len(self.input) == 0:
-                return ''
-            else:
-                self.input_idx %= len(self.input)
-                char = self.input[self.input_idx]
-                self.input_idx += 1
-                return char
+    def output_thread(self):
+        """Write everything from the output_q to outfile."""
+        while self.running:
+            if not self.output_q.empty():
+                char = self.output_q.get()
+                self.outfile.write(char)
+                self.outfile.flush()
 
     def setup_registers(self):
         logger.info("Setting up registers. This may take a while...")
@@ -258,24 +251,27 @@ class Interpreter(object):
 
         # handle I/O
         if self.registers["O"] != 0:
-            if random() < self.output_chance:
-                try:
-                    self.outfile.write(chr(self.registers["O"] - 1))
-                    self.outfile.flush()
-                    self.registers["O"] = 0
-                except IOError:
-                    pass
+            if random() < self.output_chance and self.output_q.empty():
+                self.output_q.put(chr(self.registers["O"] - 1))
+                self.registers["O"] = 0
 
         if self.registers["I"] == 0:
             if random() < self.input_chance:
-                try:
-                    char = self.infile.read(1)
-                    if char:
-                        value = ord(char) + 1
-                        self.input.append(value)
-                        self.registers["I"] = value
-                except IOError:
-                    pass
+                char = None
+                if self.infile.closed:
+                    # replay already seen input, unless we have none.
+                    if len(self.input) > 0:
+                        self.input_idx %= len(self.input)
+                        char = self.input[self.input_idx]
+                        self.input_idx += 1
+
+                elif not self.input_q.empty():
+                    # get char from input_q and add it to input
+                    char = self.input_q.get()
+                    self.input.append(char)
+
+                if char is not None:
+                    self.registers["I"] = ord(char) + 1
 
         self.tc += 1
         self.tc %= len(self.transactions)
@@ -284,17 +280,24 @@ class Interpreter(object):
         self.load(source)
         self.setup_registers()
 
-        logger.info("Starting input thread...")
-        t = threading.Thread(target=self.read_infile)
-        t.start()
-
         # Set transaction counter to a random transaction.
         self.tc = choice(range(len(self.transactions)))
+
+        logger.info("Starting I/O threads...")
+        t1 = threading.Thread(target=self.input_thread)
+        t2 = threading.Thread(target=self.output_thread)
+        t1.start()
+        t2.start()
 
         while True:
             try:
                 self.step()
             except StopIteration:
+                break
+            except KeyboardInterrupt:
+                self.running = False
+                t1.join()
+                t2.join()
                 break
 
 
