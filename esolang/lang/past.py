@@ -286,6 +286,7 @@ class Interpreter(object):
         logger.info("Starting I/O threads...")
         t1 = threading.Thread(target=self.input_thread)
         t2 = threading.Thread(target=self.output_thread)
+        t1.daemon = t2.daemon = True
         t1.start()
         t2.start()
 
@@ -293,11 +294,6 @@ class Interpreter(object):
             try:
                 self.step()
             except StopIteration:
-                break
-            except KeyboardInterrupt:
-                self.running = False
-                t1.join()
-                t2.join()
                 break
 
 
