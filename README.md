@@ -9,9 +9,11 @@ together with a framework for writing new interpreters and
 a collection of some examples.
 
 Supported languages are:
+ * [ABCR](https://esolangs.org/wiki/ABCR) (incomplete)
  * [Brainfuck](https://esolangs.org/wiki/Brainfuck)
  * [Befunge](https://esolangs.org/wiki/Befunge) (incomplete)
  * [Monkeys](https://esolangs.org/wiki/Monkeys)
+ * [My Unreliable Past](https://esolangs.org/wiki/My_Unreliable_Past)
 
 ## Development status
 ``esolang`` is in early development and it's a just-for-fun project
