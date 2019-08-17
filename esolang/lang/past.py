@@ -139,12 +139,9 @@ class Interpreter(object):
         self.input_q = Queue()
         self.input = []
         self.input_idx = 0
-        self.input_lock = threading.Lock()
         self.input_chance = 0.125
 
         self.output_q = Queue()
-        self.output = []
-        self.output_lock = threading.Lock()
         self.output_chance = 0.125
 
         self.running = True
@@ -166,7 +163,7 @@ class Interpreter(object):
                 self.outfile.flush()
 
     def setup_registers(self):
-        logger.info("Setting up registers. This may take a while...")
+        logger.debug("Setting up registers:")
         for name in self.registers:
 
             # Randomize register value
@@ -185,6 +182,7 @@ class Interpreter(object):
                 # for the 3rd iteration.
                 if random() < 0.5:
                     self.registers[name] = randrange(vmin, vmax)
+                    logger.debug(" - %s: %d" % (name, self.registers[name]))
                     break
 
     def load(self, source):
@@ -260,6 +258,8 @@ class Interpreter(object):
         if self.registers["O"] != 0:
             if random() < self.output_chance and self.output_q.empty():
                 self.output_q.put(chr(self.registers["O"] - 1))
+                logger.debug("Output register set to 0 from: %d" %
+                             self.registers["O"])
                 self.registers["O"] = 0
 
         if self.registers["I"] == 0:
@@ -279,6 +279,8 @@ class Interpreter(object):
 
                 if char is not None:
                     self.registers["I"] = ord(char) + 1
+                    logger.debug("Input register set to: %d" %
+                                 self.registers["I"])
 
         self.tc += 1
         self.tc %= len(self.transactions)
@@ -290,7 +292,7 @@ class Interpreter(object):
         # Set transaction counter to a random transaction.
         self.tc = randrange(len(self.transactions))
 
-        logger.info("Starting I/O threads...")
+        logger.debug("Starting I/O threads...")
         t1 = threading.Thread(target=self.input_thread)
         t2 = threading.Thread(target=self.output_thread)
         t1.daemon = t2.daemon = True
