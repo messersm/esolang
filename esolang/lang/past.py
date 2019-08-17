@@ -7,9 +7,7 @@ import string
 import sys
 import threading
 
-from fractions import Fraction
-from math import log
-from random import choice, random
+from random import choice, random, randrange
 
 from esolang import INTERPRETERS
 
@@ -142,12 +140,12 @@ class Interpreter(object):
         self.input = []
         self.input_idx = 0
         self.input_lock = threading.Lock()
-        self.input_chance = 0.5
+        self.input_chance = 0.125
 
         self.output_q = Queue()
         self.output = []
         self.output_lock = threading.Lock()
-        self.output_chance = 0.5
+        self.output_chance = 0.125
 
         self.running = True
 
@@ -170,21 +168,24 @@ class Interpreter(object):
     def setup_registers(self):
         logger.info("Setting up registers. This may take a while...")
         for name in self.registers:
-            # Randomize register value
-            # 0 with chance 1/2
-            # 1 with chance 1/4
-            # 2, 3 each with chance 1/8
-            # 4, 5, 6, 7 each with chance 1/16...
-            value = 0
-            chance = Fraction(1, 2)
-            while True:
-                if random() < chance:
-                    self.registers[name] = value
-                    break
 
-                value += 1
-                if log(value, 2).is_integer():
-                    chance /= 2
+            # Randomize register value
+            # 0 with chance 1/2 = 1/2 ** 1
+            # 1 with chance 1/4 = 1/2 ** 2
+            # [2, 3] with chance 1/8 = 1/2 ** 3
+            # [4, 5, 6, 7] with chance 1/16 = 1/2 ** 4
+            exp = 0
+            while True:
+                vmin = int(2**(exp-1))
+                vmax = 2**exp
+                exp += 1
+
+                # On each iteration, we accept half of the random() result.
+                # E.g. This gives us 1/2 ** 3 = 1/8 chance
+                # for the 3rd iteration.
+                if random() < 0.5:
+                    self.registers[name] = randrange(vmin, vmax)
+                    break
 
     def load(self, source):
         # align the source, strip comments and whitespace,
@@ -281,7 +282,7 @@ class Interpreter(object):
         self.setup_registers()
 
         # Set transaction counter to a random transaction.
-        self.tc = choice(range(len(self.transactions)))
+        self.tc = randrange(len(self.transactions))
 
         logger.info("Starting I/O threads...")
         t1 = threading.Thread(target=self.input_thread)
