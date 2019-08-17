@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import logging
 import os.path
 import sys
 
@@ -50,8 +51,17 @@ def main():
     parser.add_argument(
         "-l", "--lang",
         help="interpret the given filename(s) in the given esolang")
+    parser.add_argument(
+        "-v", "--verbose", dest="loglevel", action="store_const",
+        const=logging.INFO, default=logging.WARNING,
+        help="set loglevel to verbose")
+    parser.add_argument(
+        "-d", "--debug", dest="loglevel", action="store_const",
+        const=logging.DEBUG, default=logging.WARNING,
+        help="set loglevel to debug")
 
     args = parser.parse_args()
+    logging.basicConfig(level=args.loglevel)
 
     if args.list:
         list_languages()
