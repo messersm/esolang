@@ -243,6 +243,12 @@ class Interpreter(object):
                 self.registers[name] += value
             elif op == "-":
                 self.registers[name] -= value
+
+                # rollback and cancel the transaction,
+                # if the result is negative.
+                if self.registers[name] < 0:
+                    self.registers = backup
+                    break
             elif op == "=":
                 # Rollback and cancel the transaction,
                 # if reg doesn't have the correct value.
