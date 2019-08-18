@@ -207,7 +207,7 @@ class Fifo(deque):
 
     def peek(self):
         if len(self) > 0:
-            return self.popleft()
+            return self[0]
         elif self.peek_default is None:
             raise IndexError("Fifo has no elements.")
         else:
