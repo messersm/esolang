@@ -49,6 +49,9 @@ class StandardConnection(object):
     def recv(self, length):
         return self.infile.read(length)
 
+    def close(self):
+        pass
+
 
 class L33tInterpreter(object):
     lang = "l33t"
@@ -95,7 +98,7 @@ class L33tInterpreter(object):
         if op == NOP:
             pass
         elif op == WRT:
-            self.connection.send(chr(self.memory[self.ptr]))
+            self.connection.send(bytes(chr(self.memory[self.ptr])))
         elif op == RD:
             self.memory[self.ptr] = ord(self.connection.recv(1))
         elif op == IF:
@@ -179,9 +182,16 @@ class L33tInterpreter(object):
                 sock = socket.socket()
                 addrs = [(self.ptr + i) % self.memsize for i in range(6)]
                 values = [self.memory[addr] for addr in addrs]
-                host = ".".join(str(values[i]) for i in range(4))
-                port = values[4] * 256 + values[5]
-                sock.connect((host, port))
+                if values == [0, 0, 0, 0, 0, 0]:
+                    self.connection.close()
+                    self.connection = StandardConnection(
+                        self.infile, self.outfile)
+                else:
+                    host = ".".join(str(values[i]) for i in range(4))
+                    port = values[4] * 256 + values[5]
+                    sock.connect((host, port))
+                    self.connection.close()
+                    self.connection = sock
             except socket.error:
                 self.errfile.write(CONNECTION_ERROR)
         elif op == END:
