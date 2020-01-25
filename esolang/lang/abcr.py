@@ -61,13 +61,13 @@ class ABCRInterpreter(object):
 
             # r = r + f.get()
             "*": flow(self.r.put, add, self.r.get, self.a.get),
-            "+": flow(self.r.put, add, self.r.get, self.a.get),
-            ",": flow(self.r.put, add, self.r.get, self.a.get),
+            "+": flow(self.r.put, add, self.r.get, self.b.get),
+            ",": flow(self.r.put, add, self.r.get, self.c.get),
 
             # r = r - f.get()
             "-": flow(self.r.put, sub, self.r.get, self.a.get),
             ".": flow(self.r.put, sub, self.r.get, self.b.get),
-            "/": flow(self.r.put, sub, self.r.get, self.b.get),
+            "/": flow(self.r.put, sub, self.r.get, self.c.get),
 
             # output values as numbers
             "o": flow(self.outfile.write, self.a.peek),
@@ -143,14 +143,6 @@ class ABCRInterpreter(object):
                 break
 
             char = self.source[self.pc]
-
-            if char == "\n":
-                print("pc = %d" % self.pc)
-                print("a: %s" % str(self.a))
-                print("b: %s" % str(self.a))
-                print("c: %s" % str(self.c))
-                print("r: %s" % str(self.r.value))
-
             func = self.commands.get(char, None)
             if func is None:
                 pass
@@ -158,8 +150,6 @@ class ABCRInterpreter(object):
                 func()
 
             self.pc += 1
-
-        self.outfile.flush()
 
 
 INTERPRETERS.append(ABCRInterpreter)
