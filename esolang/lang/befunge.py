@@ -1,19 +1,16 @@
-"""
+"""A Befunge-93 interpreter
 
 For documentation of the language see:
 https://esolangs.org/wiki/Befunge
-
 """
-
 import string
 import sys
 
+from random import choice
+from esolang import INTERPRETERS
+
 if sys.version_info.major < 3:
     chr = unichr
-
-from random import choice
-
-from esolang import INTERPRETERS
 
 
 class BefungeInterpreter(object):
@@ -85,10 +82,20 @@ class BefungeInterpreter(object):
                 else:
                     self.stack.append(b // a)
             elif op == "%":
-                # TODO: Befunge doesn't define behaviour for a == 0
                 a = self.stack.pop()
                 b = self.stack.pop()
-                self.stack.append(b % a)
+
+                if a == 0:
+                    msg = "Divsion by zero. What result do you want? "
+
+                    while True:
+                        try:
+                            result = int(input(msg))
+                            self.stack.append(result)
+                        except ValueError:
+                            msg = "Input must be an integer. Try again: "
+                else:
+                    self.stack.append(b % a)
             elif op == "!":
                 a = self.stack.pop()
                 self.stack.append(int(not a))
@@ -147,10 +154,15 @@ class BefungeInterpreter(object):
                 except IndexError:
                     self.stack.append(0)
             elif op == "p":
-                # TODO: out of bounds undefined?
                 y = self.stack.pop()
                 x = self.stack.pop()
                 v = self.stack.pop()
+
+                if (not 0 <= x < self.WIDTH) or (not 0 <= y < self.HEIGHT):
+                    raise RuntimeError(
+                        ("Write access to grid at (%d, %d)" +
+                         "out of bounds.") % (x, y))
+
                 self.grid[y][x] = chr(v)
             elif op == "&":
                 # TODO
