@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 STANDARD_ERROR = "j00 4r3 teh 5ux0r\n"
 CONNECTION_ERROR = "h0s7 5uXz0r5! c4N'7 c0Nn3<7 l0l0l0l0l l4m3R !!!\n"
-IF_EIF_ERROR = "l34rn t0 cL0s3 y0uR "
+IF_EIF_ERROR = "l34rn t0 cL0s3 y0uR 1Fs!!!\n"
 
 
 # opcodes
