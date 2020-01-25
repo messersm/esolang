@@ -5,5 +5,6 @@ INTERPRETERS = []
 import esolang.lang.abcr
 import esolang.lang.befunge
 import esolang.lang.brainfuck
+import esolang.lang.l33t
 import esolang.lang.monkeys
 import esolang.lang.past
